@@ -1,0 +1,141 @@
+#!/bin/bash
+#
+# transmission-daemon  Start the transmission BitTorrent daemon client
+#
+# chkconfig: 2345 55 25
+# description: Transmission is a BitTorrent client. \
+#              This service Start up the transmission daemon.
+#
+### BEGIN INIT INFO
+# Provides:          transmission-daemon
+# Required-Start:    networking
+# Required-Stop:     networking
+# Default-Start:     2 3 5
+# Default-Stop:      0 1 6
+# Short-Description: Start the transmission BitTorrent daemon client.
+### END INIT INFO
+
+# Original Author: Lennart A. JÃŒtte, based on Rob Howell's script
+# Modified by WangYan <webmaster@wangyan.org>
+
+# To install:
+#   copy this file to /etc/init.d/transmission-daemon
+#   shell> chkconfig --add transmission-daemon (RedHat)
+#   shell> update-rc.d -f transmission-daemon defaults (debian)
+
+# To uninstall:
+#   shell> chkconfig --del transmission-daemon (RedHat)
+#   shell> update-rc.d -f transmission-daemon remove
+
+# The folder where Transmission stores the config & web files.
+# ONLY change this you have it at a non-default location
+TRANSMISSION_HOME="/usr/local/transmission/etc"
+TRANSMISSION_WEB_HOME="/usr/local/transmission/share/transmission/web"
+
+# The arguments passed on to transmission-daemon.
+# ONLY change this you need to, otherwise use the
+# settings file as per above.
+TRANSMISSION_ARGS=""
+
+# Daemon
+NAME=transmission-daemon
+DAEMON=$(which $NAME)
+PIDFILE=/var/run/$NAME.pid
+LOCKFILE=/var/lock/subsys/$NAME
+SCRIPTNAME=/etc/init.d/$NAME
+LOGFILE=/var/log/$NAME.log
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# Exit if the network is off
+[ "${NETWORKING}" = "no" ] && exit 0
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Export the configuration/web directory, if set
+if [ -n "$TRANSMISSION_HOME" ]; then
+      export TRANSMISSION_HOME
+fi
+
+if [ -n "$TRANSMISSION_WEB_HOME" ]; then
+      export TRANSMISSION_WEB_HOME
+fi
+
+#
+# Function that starts the daemon/service
+#
+
+do_start()
+{
+    echo -n "Starting ${NAME}: "
+
+    $DAEMON $TRANSMISSION_ARGS -x $PIDFILE -e $LOGFILE && sleep 1
+    \cp $TRANSMISSION_HOME/settings.json.bak $TRANSMISSION_HOME/settings.json
+    killall -HUP ${NAME}
+
+    status $NAME &> /dev/null && echo_success || echo_failure
+    RETVAL=$?
+
+    if [ $RETVAL -eq 0 ]; then
+        touch $LOCKFILE
+    fi
+
+    echo
+}
+
+do_stop()
+{
+    echo -n "Shutting down ${NAME}: "
+
+    killproc $NAME
+    RETVAL=$?
+
+    [ $RETVAL -eq 0 ] && /bin/rm -rf $LOCKFILE $PIDFILE
+
+    echo
+}
+
+do_reload()
+{
+    echo -n "Reloading ${NAME}: "
+    killall -HUP ${NAME} && echo_success
+    echo
+}
+
+case "$1" in
+    start)
+        do_start
+    ;;
+    stop)
+        do_stop
+    ;;
+    reload)
+        do_reload
+    ;;
+    restart)
+        do_stop
+        do_start
+    ;;
+    condrestart|try-restart)
+        if [ -f $DAEMON_LOCKFILE ]; then
+            do_stop
+            do_start
+        fi
+    ;;
+    status)
+        status $NAME
+    ;;
+
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|reload|restart|condrestart|status}" >&2
+        exit 3
+    ;;
+esac
+
+
+
