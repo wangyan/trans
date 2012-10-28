@@ -115,6 +115,18 @@ cd libevent-*
 ./configure
 make && make install && ldconfig
 
+echo "---------- libiconv ----------"
+
+cd $TRANS_PATH/
+
+if [ ! -s libiconv-*.tar.gz ]; then
+	wget -c http://src-mirror.googlecode.com/files/libiconv-1.14.tar.gz
+fi
+tar -zxf libiconv-*.tar.gz
+cd libiconv-*/
+./configure --prefix=/usr/local
+make && make install && ldconfig
+
 echo "---------- transmission ----------"
 
 cd $TRANS_PATH/
