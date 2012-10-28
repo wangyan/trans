@@ -22,10 +22,26 @@
 2. 输入`Transmission`远程登录密码。
 3. 输入`Transmission`下载目录，默认目录是`/root/Downloads`
 4. 按任意键开始安装，可以按+c退出。
-5. `Transmission`配置文件路径是`/usr/local/transmission/etc/settings.json.bak`    
-    注意：请不要遗漏了`bak`，不能直接修改`settings.json`文件。
 
-## 四、联系方式
+## 四、使用说明
+
+1. 输入`/etc/init.d/transmission start`启动
+2. 输入`/etc/init.d/transmission stop`停止
+3. 输入`/etc/init.d/transmission restart`重启
+
+## 五、扩展资源
+
+> http://www.transmissionbt.com/resources/
+
+例如：[transmisson-remote-gui 图形客户端](http://code.google.com/p/transmisson-remote-gui/)、  [Transdroid 手机android客户端](http://www.transdroid.org/about/)
+
+## 六、注意事项
+
+1. 修改配置文件需要重启
+2. `Transmission`配置文件路径是`/usr/local/transmission/etc/settings.json.bak`    
+    注意：请不要遗漏了`bak`，请不要直接修改`settings.json`文件。
+
+## 七、联系方式
 
 > 如果安装出错，请将安装目录下的 `log.txt` 文件提交给我处理。   
 >   
@@ -34,3 +50,4 @@
 > Q Q群：[138082163](http://qun.qq.com/#jointhegroup/gid/138082163)  
 > Twitter：[@wang_yan](https://twitter.com/wang_yan)  
 > Home Page: [WangYan Blog](http://wangyan.org/blog)  
+
